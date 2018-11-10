@@ -1416,7 +1416,9 @@ define(['d3'], function() {
         throw new Error('Already up-to-date.');
       } else if (noFF === true) {
         var branchStartCommit = this.getCommit(mergeTarget.parent);
-        while (branchStartCommit.parent !== currentCommit.id) {
+        var base = (currentCommit.isNoFFCommit === true) ? currentCommit.parent2 : currentCommit.id;
+
+        while (branchStartCommit.parent !== base) {
           branchStartCommit = this.getCommit(branchStartCommit.parent);
         }
 
