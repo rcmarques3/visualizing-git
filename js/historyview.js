@@ -939,7 +939,7 @@ define(['d3'], function() {
           return commit.cx - (width / 2);
         });
 
-      newTags.append('svg:text')
+        newTags.append('svg:text')
         .text(function(d) {
           if (d.name.indexOf('[') === 0 && d.name.indexOf(']') === d.name.length - 1)
             return d.name.substring(1, d.name.length - 1);
@@ -1234,7 +1234,22 @@ define(['d3'], function() {
       this.commitData.forEach(commit => {
         commit.tags = commit.tags.filter(tag => tag !== `[${name.trim()}]`)
       });
+      
+      this.renderTags();
+    },
+    
+    renameBranch: function(name) {
+      const branchIndex = this.branches.indexOf(this.currentBranch);
+      this.branches[branchIndex] = name;
+      this.branches = Array.from(new Set(this.branches));
 
+      this.commitData.forEach(commit => {
+        const tagIndex = commit.tags.indexOf(this.currentBranch);
+        commit.tags[tagIndex] = name;
+        commit.tags = Array.from(new Set(commit.tags));  
+      });
+
+      this.currentBranch = name;
       this.renderTags();
     },
 
