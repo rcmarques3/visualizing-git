@@ -666,6 +666,9 @@ define(['d3'], function() {
         .classed('cherry-picked', function(d) {
           return d.cherryPicked || d.cherryPickSource;
         })
+        .on('click', function(d){
+          document.querySelectorAll(".control-box .input")[0].value += ' ' + d.id;
+        })
         .call(fixCirclePosition)
         .attr('r', 1)
         .transition("inflate")
