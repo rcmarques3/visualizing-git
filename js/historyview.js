@@ -527,7 +527,7 @@ define(['d3'], function() {
      * @param container {String} selector for the container to render the SVG into
      */
     render: function(container) {
-      var svgContainer, svg;
+      var svgContainer, svg, buttonToggleWorkspace;
 
       svgContainer = container.append('div')
         .classed('svg-container', true)
@@ -535,6 +535,13 @@ define(['d3'], function() {
 
       if (this.isRemote) {
         $(svgContainer).draggable();
+      } else {
+        buttonToggleWorkspace = svgContainer.append('button')
+          .classed('toggle-workspace', true)
+          .text('Toggle Workspace')
+          .on('click', function () {
+            $('#ExplainGitZen-Container .ws-container').toggle();
+          });
       }
 
       svg = svgContainer.append('svg:svg');

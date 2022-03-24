@@ -72,12 +72,14 @@ define(['historyview', 'd3'], function(HistoryView) {
       //svgContainer = container.select('svg-container');
       svgContainer = container.append('div')
         .classed('ws-container', true);
+      $(svgContainer).draggable();
 
       svg = svgContainer.append('svg:svg');
 
       svg.attr('id', this.name)
         .attr('width', "100%")
-        .attr('height', "100%");
+        .attr('height', "100%")
+        .attr('viewBox', '0 0 1000 400');
         //.attr('width', this.width)
         //.attr('height', this.height);
       var labelX = 15;
@@ -85,6 +87,7 @@ define(['historyview', 'd3'], function(HistoryView) {
 
 
       stash = svg.append('svg:g').classed('stash', true).attr('id', 'stash')
+        .attr('transform', 'translate(10, 0)');
       stash.append('svg:rect')
       	  .attr('width', "31%")
       	  .attr('height', "100%")
@@ -99,7 +102,7 @@ define(['historyview', 'd3'], function(HistoryView) {
 
       curr_ws = svg.append('svg:g').classed('curr-ws', true)
                     .attr('id', 'curr_ws')
-                    .attr('transform', 'translate(750, 0)');
+                    .attr('transform', 'translate(350, 0)');
       curr_ws.append('svg:rect')
       	  .attr('width', "31%")
       	  .attr('height', "100%")
@@ -114,7 +117,7 @@ define(['historyview', 'd3'], function(HistoryView) {
 
       index = svg.append('svg:g').classed('index', true)
                     .attr('id', 'index')
-                    .attr('transform', 'translate(1500, 0)');
+                    .attr('transform', 'translate(680, 0)');
       index.append('svg:rect')
       	  .attr('width', "31%")
       	  .attr('height', "100%")

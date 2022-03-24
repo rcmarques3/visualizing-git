@@ -91,18 +91,26 @@ span.cmd {
   right: 0;
   left: 250px;
   margin-left: 0;
-  height: 49%;
+  bottom: 0;
 }
 
 #ExplainGitZen-Container .ws-container {
-  display: inline-block;
   border: 1px dotted #AAA;
   position: absolute;
-  bottom: 0;
+  top: 60px;
   right: 0;
   left: 250px;
   margin-left: 5px;
-  height: 49%;
+  min-height: 400px;
+  z-index: 100;
+  opacity: 0.8;
+  display: none;
+}
+
+#ExplainGitZen-Container .toggle-workspace {
+  position: absolute;
+  top: 8px;
+  left: 180px;
 }
 
 #ExplainGitZen-Container .svg-container.remote-container {
