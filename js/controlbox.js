@@ -441,7 +441,7 @@ function(_yargs, d3, demos) {
 
     branch: function(args, options, cmdStr) {
       options = yargs(cmdStr, {
-        alias: { delete: ['d'], remote: ['r'], all: ['a'] },
+        alias: { delete: ['d'], remote: ['r'], all: ['a'], rename: ['M', 'm', 'move']},
         boolean: ['a', 'r']
       })
       var branchName = options._[0]
@@ -449,6 +449,10 @@ function(_yargs, d3, demos) {
 
       if (options.delete) {
         return this.getRepoView().deleteBranch(options.delete);
+      }
+
+      if (options.rename) {
+        return this.getRepoView().renameBranch(options.rename);
       }
 
       if (options._[2]) {
@@ -524,6 +528,12 @@ function(_yargs, d3, demos) {
 
       while (args.length > 0) {
         var arg = args.shift();
+        
+        if(arg.trim() === '-d' || arg.trim() === '--delete'){
+          var tagName = args.shift();
+          this.getRepoView().deleteTag(tagName);
+          return this;
+        }
 
         try {
           this.getRepoView().tag(arg);

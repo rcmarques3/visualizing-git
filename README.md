@@ -54,3 +54,5 @@ git stash
 We hope you find this tool useful! Issues and pull requests are welcome! Enjoy! :sparkles:
 
 Based on the awesome work done by [@onlywei](https://github.com/onlywei/explain-git-with-d3) :bow:
+https://github.com/RezaKargar/visualizing-git
+https://github.com/dpatel19/visualizing-git/tree/working_tree_viz
