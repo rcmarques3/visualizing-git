@@ -31,23 +31,23 @@ Type `help` in the command box to see a list of supported operations
 
 Available Git Commands:
 ```
-git branch
-git checkout
-git cherry-pick
-git commit
+git branch [-d] [-r] [-a] [-m]
+git checkout [-b, --]
+git cherry-pick [refs] [-m parent-nb]
+git commit [-m msg] [--amend]
 git fetch
-git log
-git merge
+git log [parent]
+git merge [--no-ff]
 git pull
-git push
+git push [-f]
 git rebase
-git reflog
-git reset
+git reflog [show] [exists]
+git reset [--soft] [--mixed] [--hard] [HEAD]
 git rev-parse
-git revert
-git tag
-git add
-git stash
+git revert [-m parent-nb]
+git tag [name] [-d|--delete]
+git add [.|-u] [filename]
+git stash [pop] [apply] [drop] [clear]
 ```
 
 
