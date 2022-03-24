@@ -243,7 +243,7 @@ function(_yargs, d3, demos) {
         this.info('Available Git Commands:')
         this.info('`git branch`')
         this.info('`git checkout`')
-        this.info('`git cherry_pick`')
+        this.info('`git cherry-pick`')
         this.info('`git commit`')
         this.info('`git fetch`')
         this.info('`git log`')
@@ -253,7 +253,7 @@ function(_yargs, d3, demos) {
         this.info('`git rebase`')
         this.info('`git reflog`')
         this.info('`git reset`')
-        this.info('`git rev_parse`')
+        this.info('`git rev-parse`')
         this.info('`git revert`')
         this.info('`git tag`')
         this.info('`git add`')
@@ -331,7 +331,7 @@ function(_yargs, d3, demos) {
         return this.error();
       }
 
-      var method = split[1].replace(/-/g, '_'),
+      var method = split[1],
         args = split.slice(2),
         argsStr = args.join(' ')
 
@@ -418,13 +418,13 @@ function(_yargs, d3, demos) {
       this.info(logs)
     },
 
-    rev_parse: function(args) {
+    'rev-parse': function(args) {
       args.forEach(function(arg) {
         this.info(this.getRepoView().revparse(arg))
       }, this)
     },
 
-    cherry_pick: function (args, opt, cmdStr) {
+    'cherry-pick': function (args, opt, cmdStr) {
       opt = yargs(cmdStr, {
         number: ['m']
       })
