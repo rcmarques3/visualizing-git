@@ -255,7 +255,7 @@ define(['d3'], function() {
     this.name = config.name || 'UnnamedHistoryView';
     this.commitData = commitData;
 
-    this.currentBranch = config.currentBranch || 'master';
+    this.currentBranch = config.currentBranch || 'main';
 
     this.width = config.width;
     this.height = config.height || 400;
@@ -359,6 +359,17 @@ define(['d3'], function() {
       }
     },
 
+    matchesTag: function matchesTag(ref, type, tag) {
+      const short = type + "/" + tag
+      const long = "refs/" + short
+
+      if (ref === tag || ref === short || ref === long) {
+        return true
+      }
+
+      return false
+    },
+
     /**
      * @method getCommit
      * @param ref {String} the id or a tag name that refers to the commit
@@ -406,6 +417,7 @@ define(['d3'], function() {
         throw new Error("Ref " + ref + " is ambiguous")
       }
 
+      var matchesTag = this.matchesTag
       for (var i = 0; i < commitData.length; i++) {
         var commit = commitData[i];
         if (commit === ref) {
@@ -421,18 +433,19 @@ define(['d3'], function() {
         var matchedTag = function() {
           for (var j = 0; j < commit.tags.length; j++) {
             var tag = commit.tags[j];
-            if (tag === ref) {
+            if (matchesTag(ref, "heads", tag)) {
               matchedCommit = commit;
               return true;
             }
 
             if (tag.indexOf('[') === 0 && tag.indexOf(']') === tag.length - 1) {
               tag = tag.substring(1, tag.length - 1);
-            }
-            if (tag === ref) {
+
+              if (matchesTag(ref, "tags", tag)) {
               matchedCommit = commit;
               return true;
             }
+          }
           }
         }();
         if (matchedTag === true) {
@@ -514,7 +527,7 @@ define(['d3'], function() {
      * @param container {String} selector for the container to render the SVG into
      */
     render: function(container) {
-      var svgContainer, svg;
+      var svgContainer, svg, buttonToggleWorkspace;
 
       svgContainer = container.append('div')
         .classed('svg-container', true)
@@ -522,6 +535,13 @@ define(['d3'], function() {
 
       if (this.isRemote) {
         $(svgContainer).draggable();
+      } else {
+        buttonToggleWorkspace = svgContainer.append('button')
+          .classed('toggle-workspace', true)
+          .text('Toggle Workspace')
+          .on('click', function () {
+            $('#ExplainGitZen-Container .ws-container').toggle();
+          });
       }
 
       svg = svgContainer.append('svg:svg');
@@ -665,6 +685,9 @@ define(['d3'], function() {
         })
         .classed('cherry-picked', function(d) {
           return d.cherryPicked || d.cherryPickSource;
+        })
+        .on('click', function(d){
+          document.querySelectorAll(".control-box .input")[0].value += ' ' + d.id;
         })
         .call(fixCirclePosition)
         .attr('r', 1)
@@ -860,8 +883,8 @@ define(['d3'], function() {
 
       for (b = 0; b < this.branches.length; b++) {
         branch = this.branches[b];
-        if (branch.indexOf('/') === -1) {
-          commit = this.getCommit(branch);
+        if (!branch.startsWith('origin/')) {
+          commit = this.getCommit("refs/heads/" + branch);
           parent = this.getCommit(commit.parent);
           parent2 = this.getCommit(commit.parent2);
 
@@ -916,7 +939,7 @@ define(['d3'], function() {
           var classes = 'branch-tag';
           if (d.name.indexOf('[') === 0 && d.name.indexOf(']') === d.name.length - 1) {
             classes += ' git-tag';
-          } else if (d.name.indexOf('/') >= 0) {
+          } else if (d.name.startsWith('origin/')) {
             classes += ' remote-branch';
           } else if (d.name.toUpperCase() === 'HEAD') {
             classes += ' head-tag';
@@ -939,7 +962,7 @@ define(['d3'], function() {
           return commit.cx - (width / 2);
         });
 
-      newTags.append('svg:text')
+        newTags.append('svg:text')
         .text(function(d) {
           if (d.name.indexOf('[') === 0 && d.name.indexOf(']') === d.name.length - 1)
             return d.name.substring(1, d.name.length - 1);
@@ -963,7 +986,7 @@ define(['d3'], function() {
       var display = this.svg.select('text.current-branch-display'),
         text = 'HEAD: ';
 
-      if (branch && branch.indexOf('/') === -1) {
+      if (branch && !branch.startsWith('origin/')) {
         text += branch;
         this.currentBranch = branch;
       } else {
@@ -1226,6 +1249,31 @@ define(['d3'], function() {
 
     tag: function(name) {
       this.branch('[' + name + ']');
+    },
+
+    deleteTag: function(name) {
+      this.branches = this.branches.filter(branch => branch !== `[${name.trim()}]`);
+
+      this.commitData.forEach(commit => {
+        commit.tags = commit.tags.filter(tag => tag !== `[${name.trim()}]`)
+      });
+      
+      this.renderTags();
+    },
+    
+    renameBranch: function(name) {
+      const branchIndex = this.branches.indexOf(this.currentBranch);
+      this.branches[branchIndex] = name;
+      this.branches = Array.from(new Set(this.branches));
+
+      this.commitData.forEach(commit => {
+        const tagIndex = commit.tags.indexOf(this.currentBranch);
+        commit.tags[tagIndex] = name;
+        commit.tags = Array.from(new Set(commit.tags));  
+      });
+
+      this.currentBranch = name;
+      this.renderTags();
     },
 
     deleteBranch: function(name) {
