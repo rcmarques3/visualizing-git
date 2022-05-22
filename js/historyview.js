@@ -1463,8 +1463,10 @@ define(['d3'], function() {
       } else if (this.isAncestorOf(mergeTarget, currentCommit)) {
         throw new Error('Already up-to-date.');
       } else if (noFF === true) {
-        var branchStartCommit = this.getCommit(mergeTarget.parent);
-        while (branchStartCommit.parent !== currentCommit.id) {
+        var branchStartCommit = this.getCommit(mergeTarget.id);
+        var base = (currentCommit.isNoFFCommit === true) ? currentCommit.parent2 : null;
+
+        while (branchStartCommit.parent !== base && branchStartCommit.parent !== currentCommit.id) {
           branchStartCommit = this.getCommit(branchStartCommit.parent);
         }
 
