@@ -152,32 +152,32 @@ function(_yargs, d3, demos) {
         input.node().focus()
       })
 
-	  input.on('paste', function() {
-		setTimeout(function() {
-			if (input.node().value.trim() === '' || cBox.locked) {
-              return;
+      input.on('paste', function() {
+        setTimeout(function() {
+          if (input.node().value.trim() === '' || cBox.locked) {
+            return;
+          }
+          var lines = input.node().value.split(/\r?\n/);
+
+          for(var i=0; i<lines.length; i++) {
+            if(!lines[i].trim().startsWith('#')) {
+              cBox._commandHistory.unshift(lines[i]);
+              cBox._tempCommand = '';
+              cBox._currentCommand = -1;
+              cBox.command(lines[i]);
             }
-			var lines = input.node().value.split(/\r?\n/);
-			
-			for(var i=0; i<lines.length; i++) {
-				if(!lines[i].trim().startsWith('#')) {
-					cBox._commandHistory.unshift(lines[i]);
-					cBox._tempCommand = '';
-					cBox._currentCommand = -1;
-					cBox.command(lines[i]);
-				}
-			}
-            input.node().value = '';
-		}, 0);
-	  });
-	  
+          }
+          input.node().value = '';
+        }, 0);
+      });
+
       input.on('keyup', function() {
         var e = d3.event;
 
         switch (e.keyCode) {
           case 13:
             if (this.value.trim() === '' || cBox.locked) {
-			  this.value = '';
+              this.value = '';
               return;
             }
 
