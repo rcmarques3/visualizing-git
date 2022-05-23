@@ -30,6 +30,7 @@ function(_yargs, d3, demos) {
     this._commandHistory = [];
     this._currentCommand = -1;
     this._tempCommand = '';
+    this._linesToPaste = [];
     this.rebaseConfig = {}; // to configure branches for rebase
 
     this.undoHistory = config.undoHistory || {
@@ -57,6 +58,7 @@ function(_yargs, d3, demos) {
     unlock: function () {
       this.locked = false
       this.createUndoSnapshot(true)
+      this.pastePendingLines();
     },
 
     updateSavedState: function () {
@@ -103,6 +105,32 @@ function(_yargs, d3, demos) {
       } else {
         throw new Error('invalid mode: ' + mode)
       }
+    },
+
+    // When executing commands pasted from the clipboard, after each one we need
+    // to check if an animated command (e.g. cherry-pick, rebase) is pending and the
+    // command input is locked. If so, do not continue processing the remaining lines;
+    // they will be resumed after unlocking, when this method is triggered once again.
+    pastePendingLines: function () {
+      var cBox = this;
+      if (!cBox._linesToPaste || cBox._linesToPaste.length <= 0)
+        return;
+      setTimeout(function() {
+        while(cBox._linesToPaste && cBox._linesToPaste.length > 0) {
+          var line = cBox._linesToPaste.shift();
+          if(!line.trim().startsWith('#')) {
+            cBox._commandHistory.unshift(line);
+            cBox._tempCommand = '';
+            cBox._currentCommand = -1;
+            cBox.command(line);
+            if (cBox.locked) {
+              // A command such as cherry-pick was executed, with animations, and we
+              // need to wait till the rest of the pending commands can be executed.
+              break;
+            }
+          }
+        }
+      }, 0);
     },
 
     render: function(container) {
@@ -158,22 +186,14 @@ function(_yargs, d3, demos) {
       })
 
       input.on('paste', function() {
-        setTimeout(function() {
-          if (input.node().value.trim() === '' || cBox.locked) {
-            return;
-          }
-          var lines = input.node().value.split(/\r?\n/);
-
-          for(var i=0; i<lines.length; i++) {
-            if(!lines[i].trim().startsWith('#')) {
-              cBox._commandHistory.unshift(lines[i]);
-              cBox._tempCommand = '';
-              cBox._currentCommand = -1;
-              cBox.command(lines[i]);
-            }
-          }
-          input.node().value = '';
-        }, 0);
+        var text = (d3.event.clipboardData || window.clipboardData).getData('text');
+        d3.event.preventDefault();
+        d3.event.stopPropagation();
+        if (text.trim() === '' || cBox.locked) {
+          return;
+        }
+        cBox._linesToPaste = text.split(/\r?\n/);
+        cBox.pastePendingLines();
       });
 
       input.on('keyup', function() {
