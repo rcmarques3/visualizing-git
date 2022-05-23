@@ -730,6 +730,7 @@ define(['d3'], function() {
         .on('dblclick', function(d) {
           d.fixedPos = false;
           view.renderCommits();
+          view.updateSavedState();
         })
         .call(fixCirclePosition)
         .attr('r', 1)
