@@ -671,6 +671,9 @@ define(['d3'], function() {
         })
         .classed('checked-out', function(d) {
           return d.tags.indexOf('HEAD') > -1
+        })
+        .classed('fixed-pos', function(d) {
+          return !!d.fixedPos
         });
 
       existingCircles.transition()
