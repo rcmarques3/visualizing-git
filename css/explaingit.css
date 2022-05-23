@@ -232,6 +232,10 @@ circle.commit {
   transition-timing-function: ease-out;
 }
 
+circle.commit.fixed-pos {
+  stroke-width: 5;
+}
+
 circle.commit.reverted {
   fill: #CCEEFF;
   stroke: #0066CC;

@@ -63,6 +63,9 @@ define(['d3'], function() {
   };
 
   cx = function(commit, view) {
+    if (commit.fixedPos)
+        return commit.cx;
+
     var parent = view.getCommit(commit.parent),
       parentCX = parent.cx;
 
@@ -76,6 +79,9 @@ define(['d3'], function() {
   };
 
   cy = function(commit, view) {
+    if (commit.fixedPos)
+        return commit.cy;
+
     var parent = view.getCommit(commit.parent),
       parentCY = parent.cy || cy(parent, view),
       baseLine = view.baseLine,
@@ -665,11 +671,37 @@ define(['d3'], function() {
         })
         .classed('checked-out', function(d) {
           return d.tags.indexOf('HEAD') > -1
+        })
+        .classed('fixed-pos', function(d) {
+          return !!d.fixedPos
         });
 
       existingCircles.transition()
         .duration(500)
         .call(fixCirclePosition);
+
+      var dragHandler = d3.behavior.drag()
+        .on("drag", function(d) {
+          d3.select(this)
+            .attr('cx', d3.event.x)
+            .attr('cy', d3.event.y);
+          d.cx = d3.event.x;
+          d.cy = d3.event.y;
+          d.fixedPos = true;
+          view.renderCommits();
+        })
+        .origin(function() {
+          var t = d3.select(this);
+          return {x: t.attr("cx"), y: t.attr("cy")};
+        })
+        .on("dragend", function (d) {
+          var elem = d3.select(this);
+          d.cx = parseInt(elem.attr("cx"));
+          d.cy = parseInt(elem.attr("cy"));
+          d.fixedPos = true;
+          d3.event.sourceEvent.stopPropagation();
+          view.renderCommits();
+      });
 
       newCircles = existingCircles.enter()
         .append('svg:circle')
@@ -686,8 +718,10 @@ define(['d3'], function() {
         .classed('cherry-picked', function(d) {
           return d.cherryPicked || d.cherryPickSource;
         })
-        .on('click', function(d){
-          document.querySelectorAll(".control-box .input")[0].value += ' ' + d.id;
+        .call(dragHandler)
+        .on('dblclick', function(d) {
+          d.fixedPos = false;
+          view.renderCommits();
         })
         .call(fixCirclePosition)
         .attr('r', 1)
@@ -823,6 +857,9 @@ define(['d3'], function() {
         .insert('svg:text', ':first-child')
         .classed(className, true)
         .text(getText)
+        .on('click', function(d) {
+          document.querySelectorAll(".control-box .input")[0].value += ' ' + d.id;
+        })
         .call(fixIdPosition, view, delta);
 
       existingTexts.exit()
