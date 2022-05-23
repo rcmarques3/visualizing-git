@@ -365,6 +365,10 @@ define(['d3'], function() {
       }
     },
 
+    updateSavedState: function () {
+      this.emit('updateSavedState')
+    },
+
     matchesTag: function matchesTag(ref, type, tag) {
       const short = type + "/" + tag
       const long = "refs/" + short
@@ -701,6 +705,7 @@ define(['d3'], function() {
           d.fixedPos = true;
           d3.event.sourceEvent.stopPropagation();
           view.renderCommits();
+          view.updateSavedState();
       });
 
       newCircles = existingCircles.enter()
@@ -717,6 +722,9 @@ define(['d3'], function() {
         })
         .classed('cherry-picked', function(d) {
           return d.cherryPicked || d.cherryPickSource;
+        })
+        .classed('fixed-pos', function(d) {
+          return !!d.fixedPos
         })
         .call(dragHandler)
         .on('dblclick', function(d) {

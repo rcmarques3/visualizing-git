@@ -46,6 +46,7 @@ function(_yargs, d3, demos) {
 
     this.historyView.on('lock', this.lock.bind(this))
     this.historyView.on('unlock', this.unlock.bind(this))
+    this.historyView.on('updateSavedState', this.updateSavedState.bind(this))
   }
 
   ControlBox.prototype = {
@@ -55,6 +56,10 @@ function(_yargs, d3, demos) {
 
     unlock: function () {
       this.locked = false
+      this.createUndoSnapshot(true)
+    },
+
+    updateSavedState: function () {
       this.createUndoSnapshot(true)
     },
 
