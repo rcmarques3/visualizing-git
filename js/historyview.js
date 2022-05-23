@@ -718,6 +718,9 @@ define(['d3'], function() {
         .classed('cherry-picked', function(d) {
           return d.cherryPicked || d.cherryPickSource;
         })
+        .classed('fixed-pos', function(d) {
+          return !!d.fixedPos
+        })
         .call(dragHandler)
         .on('dblclick', function(d) {
           d.fixedPos = false;
