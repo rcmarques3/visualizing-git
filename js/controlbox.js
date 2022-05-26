@@ -202,7 +202,7 @@ function(_yargs, d3, demos) {
         switch (e.keyCode) {
           case 13:
             var line = this.value.trim().replace(/\r?\n/, '');
-            if (line === '' || cBox.locked) {
+            if (line === '' || line.startsWith('#') || cBox.locked) {
               this.value = '';
               return;
             }
