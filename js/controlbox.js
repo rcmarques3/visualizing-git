@@ -117,8 +117,8 @@ function(_yargs, d3, demos) {
         return;
       setTimeout(function() {
         while(cBox._linesToPaste && cBox._linesToPaste.length > 0) {
-          var line = cBox._linesToPaste.shift();
-          if(!line.trim().startsWith('#')) {
+          var line = cBox._linesToPaste.shift().trim();
+          if(!line.startsWith('#') && !line === '') {
             cBox._commandHistory.unshift(line);
             cBox._tempCommand = '';
             cBox._currentCommand = -1;
@@ -201,15 +201,16 @@ function(_yargs, d3, demos) {
 
         switch (e.keyCode) {
           case 13:
-            if (this.value.trim() === '' || cBox.locked) {
+            var line = this.value.trim().replace(/\r?\n/, '');
+            if (line === '' || cBox.locked) {
               this.value = '';
               return;
             }
 
-            cBox._commandHistory.unshift(this.value);
+            cBox._commandHistory.unshift(line);
             cBox._tempCommand = '';
             cBox._currentCommand = -1;
-            cBox.command(this.value);
+            cBox.command(line);
             this.value = '';
             e.stopImmediatePropagation();
             break;
