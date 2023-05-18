@@ -306,11 +306,17 @@ define(['d3'], function() {
         currentBranch: this.currentBranch,
       }
 
-      return JSON.stringify(data)
+      // Use stringify and parse so that we get a deep clone JSON instead of the original value
+      return JSON.parse(JSON.stringify(data))
     },
 
     deserialize: function (data) {
-      data = JSON.parse(data)
+      if (typeof data == 'string') {
+          data = JSON.parse(data)
+      } else {
+          // Use stringify and parse so that we get a deep clone JSON instead of the original value
+          data = JSON.parse(JSON.stringify(data))
+      }
       if (data) {
         this.commitData = data.commitData
         this.branches = data.branches
