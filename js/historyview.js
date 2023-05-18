@@ -311,8 +311,12 @@ define(['d3'], function() {
     },
 
     deserialize: function (data) {
-      // Use stringify and parse so that we get a deep clone JSON instead of the original value
-      data = JSON.parse(JSON.stringify(data))
+      if (typeof data == 'string') {
+          data = JSON.parse(data)
+      } else {
+          // Use stringify and parse so that we get a deep clone JSON instead of the original value
+          data = JSON.parse(JSON.stringify(data))
+      }
       if (data) {
         this.commitData = data.commitData
         this.branches = data.branches
