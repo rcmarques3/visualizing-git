@@ -118,7 +118,7 @@ function(_yargs, d3, demos) {
       setTimeout(function() {
         while(cBox._linesToPaste && cBox._linesToPaste.length > 0) {
           var line = cBox._linesToPaste.shift().trim();
-          if(!line.startsWith('#') && !line === '') {
+          if(!line.startsWith('#') && !(line === '')) {
             cBox._commandHistory.unshift(line);
             cBox._tempCommand = '';
             cBox._currentCommand = -1;
