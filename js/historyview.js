@@ -1554,10 +1554,12 @@ define(['d3'], function() {
         'HEAD', targetCommit.id, 'rebase: checkout ' + ref
       )
 
-      var ancestorsFromTarget = this.getAncestorSet(ref)
+      var ancestorsFromTarget = this.getAncestorSet(targetCommit.id)
+      ancestorsFromTarget[targetCommit.id] = -1
       var ancestorsFromBase = this.getAncestorSet(origHeadCommit.id)
+      ancestorsFromBase[origHeadCommit.id] = -1
       var uniqueAncestors = getUniqueSetItems(ancestorsFromTarget, ancestorsFromBase)[1]
-      var commitsToCopy = Object.keys(uniqueAncestors).concat(origHeadCommit.id)
+      var commitsToCopy = Object.keys(uniqueAncestors)
             .sort(function(key1, key2) {
               return uniqueAncestors[key2] - uniqueAncestors[key1]
             })
